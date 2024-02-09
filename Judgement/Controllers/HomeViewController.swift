@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  HomeViewController.swift
 //  Judgement
 //
 //  Created by manan.goyal on 9/2/2024.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class HomeViewController: UIViewController {
   
   private let scrollView: UIScrollView = {
           let scrollView = UIScrollView()
