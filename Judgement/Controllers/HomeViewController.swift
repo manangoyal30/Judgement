@@ -66,7 +66,6 @@ class HomeViewController: UIViewController {
     scrollView.frame = view.bounds
     scrollView.backgroundColor = .white
 
-    let size = scrollView.width/3
     roomInputField.frame = CGRect(x: 30, y: view.height/3,
                                    width: scrollView.width-60,
                                    height: 52)
