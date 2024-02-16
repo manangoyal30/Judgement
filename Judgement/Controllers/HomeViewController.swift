@@ -33,6 +33,15 @@ class HomeViewController: UIViewController {
     return field
   }()
   
+  private let nameErrorField: UILabel = {
+    let label = UILabel()
+    label.backgroundColor = .clear
+    label.isHidden = true
+    label.font = .systemFont(ofSize: 12, weight: .regular)
+    label.textColor = .red
+    return label
+  }()
+  
   private let roomInputField: UITextField = {
     let field = UITextField()
     field.keyboardType = .numberPad
@@ -76,24 +85,24 @@ class HomeViewController: UIViewController {
     roomInputField.resignFirstResponder()
     let randomID = Int.random(in: 1000..<10000)
         
-        // Get the player's name from the text field
-        guard let playerName = nameInputField.text, !playerName.isEmpty else {
-            print("Player name is empty")
-            return
-        }
-        
-        // Create a new document with the random ID
-    database.collection("rooms").document("\(randomID)").setData([
-            "players": [playerName] // Add the player's name to the players list
-            // Add any other room details here
-        ]) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-            } else {
-                print("Document successfully written!")
-            }
-        }
+    guard let playerName = nameInputField.text, !playerName.isEmpty else {
+        handleNameError("Player name cannot be empty")
+        return
+    }
     
+    if nameErrorField.isHidden == false {
+      nameErrorField.isHidden = true
+    }
+    
+    database.collection("rooms").document("\(randomID)").setData([
+        "players": [playerName]
+    ]) { err in
+        if let err = err {
+            print("Error writing document: \(err)")
+        } else {
+            print("Document successfully written!")
+        }
+    }
   }
   
   override func viewDidLoad() {
@@ -106,6 +115,8 @@ class HomeViewController: UIViewController {
     
     view.addSubview(scrollView)
     scrollView.addSubview(nameInputField)
+    scrollView.addSubview(nameErrorField)
+
     scrollView.addSubview(roomInputField)
     scrollView.addSubview(joinRoomButton)
 
@@ -124,6 +135,10 @@ class HomeViewController: UIViewController {
     nameInputField.frame = CGRect(x: 30, y: view.height/3,
                                    width: scrollView.width-60,
                                    height: 52)
+    
+    nameErrorField.frame = CGRect(x: 30, y: nameInputField.bottom,
+                                  width: scrollView.width-60,
+                                  height: 20)
 
     roomInputField.frame = CGRect(x: 30, y: nameInputField.bottom+50,
                                    width: scrollView.width-60,
@@ -141,6 +156,17 @@ class HomeViewController: UIViewController {
       }
 
 }
+
+
+extension HomeViewController {
+  
+  func handleNameError(_ errorString: String) {
+    nameErrorField.text = errorString
+    nameErrorField.isHidden = false
+  }
+  
+}
+
 
 extension HomeViewController : UITextFieldDelegate {
   func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
