@@ -58,6 +58,15 @@ class HomeViewController: UIViewController {
     return field
   }()
   
+  private let roomErrorField: UILabel = {
+    let label = UILabel()
+    label.backgroundColor = .clear
+    label.isHidden = true
+    label.font = .systemFont(ofSize: 12, weight: .regular)
+    label.textColor = .red
+    return label
+  }()
+  
   private let createRoomButton: UIButton = {
     let button = UIButton()
     button.setTitle("Create Room", for: .normal)
@@ -98,7 +107,12 @@ class HomeViewController: UIViewController {
         "players": [playerName]
     ]) { err in
         if let err = err {
-            print("Error writing document: \(err)")
+          let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
+          let ok = UIAlertAction(title: "OK", style: .default) { _ in
+          }
+          alertView.addAction(ok)
+          self.present(alertView, animated: true, completion: nil)
+          
         } else {
             print("Document successfully written!")
         }
@@ -118,8 +132,9 @@ class HomeViewController: UIViewController {
     scrollView.addSubview(nameErrorField)
 
     scrollView.addSubview(roomInputField)
-    scrollView.addSubview(joinRoomButton)
+    scrollView.addSubview(roomErrorField)
 
+    scrollView.addSubview(joinRoomButton)
     scrollView.addSubview(createRoomButton)
     
     roomInputField.delegate = self
@@ -132,29 +147,36 @@ class HomeViewController: UIViewController {
     scrollView.frame = view.bounds
     scrollView.backgroundColor = .white
     
-    nameInputField.frame = CGRect(x: 30, y: view.height/3,
-                                   width: scrollView.width-60,
-                                   height: 52)
+    nameInputField.frame = CGRect(x: 30, 
+                                  y: view.height/3,
+                                  width: scrollView.width-60,
+                                  height: 52)
     
-    nameErrorField.frame = CGRect(x: 30, y: nameInputField.bottom,
+    nameErrorField.frame = CGRect(x: 30, 
+                                  y: nameInputField.bottom,
                                   width: scrollView.width-60,
                                   height: 20)
 
-    roomInputField.frame = CGRect(x: 30, y: nameInputField.bottom+50,
-                                   width: scrollView.width-60,
-                                   height: 52)
+    roomInputField.frame = CGRect(x: 30, 
+                                  y: nameInputField.bottom+50,
+                                  width: scrollView.width-60,
+                                  height: 52)
+    
+    roomErrorField.frame = CGRect(x: 30,
+                                  y: roomInputField.bottom,
+                                  width: scrollView.width-60,
+                                  height: 20)
     
     joinRoomButton.frame = CGRect(x: 30,
-                                       y: roomInputField.bottom+50,
-                                       width: (scrollView.width/2) - 35,
-                                       height: 52)
+                                  y: roomInputField.bottom+50,
+                                  width: (scrollView.width/2) - 35,
+                                  height: 52)
     
     createRoomButton.frame = CGRect(x: joinRoomButton.right+10,
-                                       y: roomInputField.bottom+50,
-                                       width: (scrollView.width/2) - 35,
-                                       height: 52)
-      }
-
+                                    y: roomInputField.bottom+50,
+                                    width: (scrollView.width/2) - 35,
+                                    height: 52)
+    }
 }
 
 
