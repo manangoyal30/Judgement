@@ -89,6 +89,47 @@ class HomeViewController: UIViewController {
     return button
   }()
   
+  @objc private func joinRoomButtonTappedWrapper() {
+      Task {
+          await joinRoomButtonTapped()
+      }
+  }
+  
+  @objc private func joinRoomButtonTapped() async {
+    
+    guard let playerName = nameInputField.text, !playerName.isEmpty else {
+        handleNameError("Player name cannot be empty")
+        return
+    }
+    
+    guard let roomNumber = roomInputField.text, !roomNumber.isEmpty, roomNumber.count == 4 else {
+      handleRoomError("Room number doesn't exist")
+      return
+    }
+    
+    if nameErrorField.isHidden == false {
+      nameErrorField.isHidden = true
+    }
+    
+    if roomErrorField.isHidden == false {
+      roomErrorField.isHidden = true
+    }
+    
+    let doc = database.collection("rooms").document("\(roomNumber)")
+    
+    do {
+      let document = try await doc.getDocument()
+      if document.exists {
+        let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
+        print("Document data: \(dataDescription)")
+      } else {
+        print("Document does not exist")
+      }
+    } catch {
+      handleNameError("Server error")
+    }
+  }
+  
   
   @objc private func createRoomButtonTapped() {
     roomInputField.resignFirstResponder()
@@ -117,10 +158,18 @@ class HomeViewController: UIViewController {
             print("Document successfully written!")
         }
     }
+    
+    // TODO: Create new room VC
   }
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    joinRoomButton.addTarget(
+      self,
+      action: #selector(joinRoomButtonTappedWrapper),
+      for: .touchUpInside
+    )
+    
     createRoomButton.addTarget(
       self,
       action: #selector(createRoomButtonTapped),
@@ -185,6 +234,11 @@ extension HomeViewController {
   func handleNameError(_ errorString: String) {
     nameErrorField.text = errorString
     nameErrorField.isHidden = false
+  }
+  
+  func handleRoomError(_ errorString: String) {
+    roomErrorField.text = errorString
+    roomErrorField.isHidden = false
   }
   
 }
