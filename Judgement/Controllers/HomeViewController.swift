@@ -160,6 +160,9 @@ class HomeViewController: UIViewController {
     }
     
     // TODO: Create new room VC
+    
+    let waitingRoom = WaitingRoomViewController(roomNumber: randomID)
+    present(waitingRoom, animated: true)
   }
   
   override func viewDidLoad() {

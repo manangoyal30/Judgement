@@ -31,6 +31,7 @@
 		13C1A6662B7F0F900072A7C1 /* Pods_Judgement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B288E9D67F22A22EDAA5A5B5 /* Pods_Judgement.framework */; };
 		13C1A6672B7F0F900072A7C1 /* Pods_Judgement.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B288E9D67F22A22EDAA5A5B5 /* Pods_Judgement.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		13C1A66A2B7F20550072A7C1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 13C1A6692B7F20550072A7C1 /* GoogleService-Info.plist */; };
+		13E321C82B8F451000197B27 /* WaitingRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E321C72B8F451000197B27 /* WaitingRoomViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,6 +59,7 @@
 		13089D6A2B75FEB3004F41FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13089D712B76001C004F41FF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		13C1A6692B7F20550072A7C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		13E321C72B8F451000197B27 /* WaitingRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingRoomViewController.swift; sourceTree = "<group>"; };
 		6C6FFA76AA504BD3FD5630C9 /* Pods-Judgement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Judgement.release.xcconfig"; path = "Target Support Files/Pods-Judgement/Pods-Judgement.release.xcconfig"; sourceTree = "<group>"; };
 		B288E9D67F22A22EDAA5A5B5 /* Pods_Judgement.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Judgement.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEC75673FAA836FB57FDF251 /* Pods-Judgement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Judgement.debug.xcconfig"; path = "Target Support Files/Pods-Judgement/Pods-Judgement.debug.xcconfig"; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				13089D602B75FEB1004F41FF /* HomeViewController.swift */,
+				13E321C72B8F451000197B27 /* WaitingRoomViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 				13089D612B75FEB1004F41FF /* HomeViewController.swift in Sources */,
 				13089D5D2B75FEB1004F41FF /* AppDelegate.swift in Sources */,
 				13089D5F2B75FEB1004F41FF /* SceneDelegate.swift in Sources */,
+				13E321C82B8F451000197B27 /* WaitingRoomViewController.swift in Sources */,
 				13089D722B76001C004F41FF /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
