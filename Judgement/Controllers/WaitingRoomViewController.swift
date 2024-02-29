@@ -26,14 +26,26 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     return scrollView
   }()
   
+  private let roomLabel: UILabel = {
+    let label = UILabel()
+    label.backgroundColor = .clear
+    label.isHidden = false
+    label.font = .systemFont(ofSize: 32, weight: .bold)
+    label.textColor = .blue
+    return label
+  }()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    guard let nameList else { return }
+
     view.addSubview(scrollView)
     
-    guard let nameList else { return }
+    self.navigationItem.setHidesBackButton(true, animated: true)
+
     scrollView.addSubview(nameList)
+    scrollView.addSubview(roomLabel)
     
     nameList.dataSource = self
     nameList.delegate = self
@@ -60,7 +72,17 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     scrollView.frame = view.bounds
-    nameList?.frame = scrollView.bounds
+    
+    roomLabel.text = String(roomNumber)
+    roomLabel.frame = CGRect(x: scrollView.width/3 + 20,
+                             y: view.height/6,
+                             width: scrollView.width-60,
+                             height: 52)
+    
+    nameList?.frame = CGRect(x: 30,
+                             y: roomLabel.bottom + 20,
+                             width: scrollView.width-60,
+                             height: 200)
     scrollView.backgroundColor = .white
   }
   

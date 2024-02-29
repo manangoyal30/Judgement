@@ -162,7 +162,7 @@ class HomeViewController: UIViewController {
     // TODO: Create new room VC
     
     let waitingRoom = WaitingRoomViewController(roomNumber: randomID)
-    present(waitingRoom, animated: true)
+    self.navigationController?.pushViewController(waitingRoom, animated: true)
   }
   
   override func viewDidLoad() {
