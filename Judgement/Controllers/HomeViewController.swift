@@ -118,13 +118,13 @@ class HomeViewController: UIViewController {
     let doc = database.collection("rooms").document("\(roomNumber)")
     
     do {
-      let document = try await doc.getDocument()
-      if document.exists {
-        let dataDescription = document.data().map(String.init(describing:)) ?? "nil"
-        print("Document data: \(dataDescription)")
-      } else {
-        print("Document does not exist")
-      }
+      try await doc.updateData([
+          "players": FieldValue.arrayUnion([playerName])
+        ])
+        
+        let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0)
+        self.navigationController?.pushViewController(waitingRoom, animated: true)
+         
     } catch {
       handleNameError("Server error")
     }
