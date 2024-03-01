@@ -144,20 +144,15 @@ class HomeViewController: UIViewController {
       nameErrorField.isHidden = true
     }
     
-    database.collection("rooms").document("\(randomID)").setData([
-        "players": [playerName]
-    ]) { err in
-        if let err = err {
-          let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
-          let ok = UIAlertAction(title: "OK", style: .default) { _ in
-          }
-          alertView.addAction(ok)
-          self.present(alertView, animated: true, completion: nil)
-          
-        } else {
-            print("Document successfully written!")
-        }
-    }
+    let player = Player(name: playerName,
+                        cardsInHand: [],
+                        points: 0,
+                        roundsJudged: 0,
+                        roundsWon: 0,
+                        hasToPlay: false)
+    
+    
+    createRoomAndAddPlayer(roomNo: randomID, player: player)
     
     // TODO: Create new room VC
     
@@ -231,7 +226,7 @@ class HomeViewController: UIViewController {
     }
 }
 
-
+// MARK: ERROR
 extension HomeViewController {
   
   func handleNameError(_ errorString: String) {
@@ -242,6 +237,43 @@ extension HomeViewController {
   func handleRoomError(_ errorString: String) {
     roomErrorField.text = errorString
     roomErrorField.isHidden = false
+  }
+  
+}
+
+
+// MARK: FIRESTORE
+extension HomeViewController {
+  
+  private func createRoomAndAddPlayer(roomNo: Int, player: Player) {
+    
+    
+    let roomDocRef = database.collection("rooms").document("\(roomNo)")
+    
+    roomDocRef.setData([
+      "players": FieldValue.arrayUnion([
+        [
+          "name": player.name,
+          "cardsInHand": [],
+          "points": player.points,
+          "roundsJudged": player.roundsJudged,
+          "roundsWon": player.roundsWon,
+          "hasToPlay": player.hasToPlay
+        ]
+      ])
+    ]) { err in
+        if let err = err {
+          print(err)
+          let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
+          let ok = UIAlertAction(title: "OK", style: .default) { _ in
+          }
+          alertView.addAction(ok)
+          self.present(alertView, animated: true, completion: nil)
+          
+        } else {
+            print("Document successfully written!")
+        }
+    }
   }
   
 }
