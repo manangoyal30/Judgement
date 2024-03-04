@@ -123,10 +123,12 @@ class HomeViewController: UIViewController {
                         hasToPlay: false)
     
     
-    joinRoom(roomNo: Int(roomNumber) ?? 0, player: player)
+    joinRoom(roomNo: Int(roomNumber) ?? 0, player: player, completion: {
+      let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0, currentPlayer: player)
+      self.navigationController?.pushViewController(waitingRoom, animated: true)
+    })
     
-    let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0)
-    self.navigationController?.pushViewController(waitingRoom, animated: true)
+    
   }
   
   
@@ -153,7 +155,7 @@ class HomeViewController: UIViewController {
     
     createRoomAndAddPlayer(roomNo: randomID, player: player)
         
-    let waitingRoom = WaitingRoomViewController(roomNumber: randomID)
+    let waitingRoom = WaitingRoomViewController(roomNumber: randomID, currentPlayer: player)
     self.navigationController?.pushViewController(waitingRoom, animated: true)
   }
   
@@ -273,31 +275,43 @@ extension HomeViewController {
   }
   
   
-  private func joinRoom(roomNo: Int, player: Player) {
+  private func joinRoom(roomNo: Int, player: Player, completion: @escaping () -> Void) {
     let roomDocRef = database.collection("rooms").document("\(roomNo)")
-    roomDocRef.updateData([
-      "players": FieldValue.arrayUnion([
-        [
-          "name": player.name,
-          "cardsInHand": [],
-          "points": player.points,
-          "roundsJudged": player.roundsJudged,
-          "roundsWon": player.roundsWon,
-          "hasToPlay": player.hasToPlay
-        ]
-      ])
-    ]) { err in
-        if let err = err {
-          print(err)
-          let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
-          let ok = UIAlertAction(title: "OK", style: .default) { _ in
-          }
-          alertView.addAction(ok)
-          self.present(alertView, animated: true, completion: nil)
-          
+
+    roomDocRef.getDocument { (document, error) in
+      if let document = document, document.exists {
+        if let players = document.data()?["players"] as? [[String: Any]],
+          players.contains(where: { ($0["name"] as? String) == player.name }) {
+          self.handleNameError("Player name already exists")
+          return
         } else {
-            print("Document successfully written!")
+          roomDocRef.updateData([
+            "players": FieldValue.arrayUnion([
+              [
+                "name": player.name,
+                "cardsInHand": [],
+                "points": player.points,
+                "roundsJudged": player.roundsJudged,
+                "roundsWon": player.roundsWon,
+                "hasToPlay": player.hasToPlay
+              ]
+            ])
+          ]) { err in
+            if let err = err {
+              print(err)
+              let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
+              let ok = UIAlertAction(title: "OK", style: .default) { _ in
+              }
+              alertView.addAction(ok)
+              self.present(alertView, animated: true, completion: nil)
+              
+            } else {
+              completion()
+              print("Document successfully written!")
+            }
+          }
         }
+      }
     }
   }
 }

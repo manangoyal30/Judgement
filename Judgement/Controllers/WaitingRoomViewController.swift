@@ -10,15 +10,17 @@ import FirebaseFirestore
 
 class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
   
+  private let currentPlayer: Player
+  
   private var roomNumber: Int
   
-  private var nameList: UITableView?
+  private var nameTable: UITableView?
   
   let database = Firestore.firestore()
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
   
-  var name: [String] = []
+  var playerNameList: [String] = []
   
   private let scrollView: UIScrollView = {
     let scrollView = UIScrollView()
@@ -35,21 +37,33 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     return label
   }()
   
+  private let startButton: UIButton = {
+    let button = UIButton()
+    button.setTitle("Start game", for: .normal)
+    button.backgroundColor = .link
+    button.setTitleColor(.white, for: .normal)
+    button.layer.cornerRadius = 12
+    button.layer.masksToBounds = true
+    button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
+    button.isHidden = true
+    return button
+  }()
+  
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    guard let nameList else { return }
+    guard let nameTable else { return }
 
     view.addSubview(scrollView)
-    
-    self.navigationItem.setHidesBackButton(true, animated: true)
 
-    scrollView.addSubview(nameList)
+    scrollView.addSubview(nameTable)
     scrollView.addSubview(roomLabel)
+    scrollView.addSubview(startButton)
     
-    nameList.dataSource = self
-    nameList.delegate = self
-    nameList.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+    nameTable.dataSource = self
+    nameTable.delegate = self
+    nameTable.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
 
     doc.addSnapshotListener { (querySnapshot, error) in
       guard let document = querySnapshot else {
@@ -63,12 +77,16 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
       }
       
       if let players = data["players"] as? [[String: Any]] {
-        self.name = players.compactMap { $0["name"] as? String }
+        self.playerNameList = players.compactMap { $0["name"] as? String }
       } else {
-        self.name = ["No players found"]
+        self.playerNameList = ["No players found"]
       }
-      nameList.reloadData()
-
+      nameTable.reloadData()
+      
+      if self.playerNameList.count > 1 && self.currentPlayer.name == self.playerNameList[0] {
+        self.startButton.isHidden = false
+        self.view.layoutIfNeeded()
+      }
     }
   }
   
@@ -83,17 +101,24 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
                              width: scrollView.width-60,
                              height: 52)
     
-    nameList?.frame = CGRect(x: 30,
+    nameTable?.frame = CGRect(x: 30,
                              y: roomLabel.bottom + 20,
                              width: scrollView.width-60,
                              height: 200)
+    
+    startButton.frame = CGRect(x: 80,
+                               y: roomLabel.bottom+250,
+                               width: (scrollView.width/2)+20,
+                               height: 52)
+    
     scrollView.backgroundColor = .white
   }
   
   
-  init(roomNumber: Int) {
+  init(roomNumber: Int, currentPlayer: Player) {
     self.roomNumber = roomNumber
-    self.nameList = UITableView()
+    self.currentPlayer = currentPlayer
+    self.nameTable = UITableView()
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -105,12 +130,12 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
 
 extension WaitingRoomViewController {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return name.count
+    return playerNameList.count
   }
   
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-    cell.textLabel?.text = name[indexPath.row]
+    cell.textLabel?.text = playerNameList[indexPath.row]
     return cell
   }
 }
