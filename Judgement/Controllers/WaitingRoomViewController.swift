@@ -62,7 +62,11 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
         return
       }
       
-      self.name = data["players"] as? [String] ?? ["Empty list"]
+      if let players = data["players"] as? [[String: Any]] {
+        self.name = players.compactMap { $0["name"] as? String }
+      } else {
+        self.name = ["No players found"]
+      }
       nameList.reloadData()
 
     }

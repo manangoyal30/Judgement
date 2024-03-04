@@ -115,19 +115,18 @@ class HomeViewController: UIViewController {
       roomErrorField.isHidden = true
     }
     
-    let doc = database.collection("rooms").document("\(roomNumber)")
+    let player = Player(name: playerName,
+                        cardsInHand: [],
+                        points: 0,
+                        roundsJudged: 0,
+                        roundsWon: 0,
+                        hasToPlay: false)
     
-    do {
-      try await doc.updateData([
-          "players": FieldValue.arrayUnion([playerName])
-        ])
-        
-        let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0)
-        self.navigationController?.pushViewController(waitingRoom, animated: true)
-         
-    } catch {
-      handleNameError("Server error")
-    }
+    
+    joinRoom(roomNo: Int(roomNumber) ?? 0, player: player)
+    
+    let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0)
+    self.navigationController?.pushViewController(waitingRoom, animated: true)
   }
   
   
@@ -153,9 +152,7 @@ class HomeViewController: UIViewController {
     
     
     createRoomAndAddPlayer(roomNo: randomID, player: player)
-    
-    // TODO: Create new room VC
-    
+        
     let waitingRoom = WaitingRoomViewController(roomNumber: randomID)
     self.navigationController?.pushViewController(waitingRoom, animated: true)
   }
@@ -247,7 +244,6 @@ extension HomeViewController {
   
   private func createRoomAndAddPlayer(roomNo: Int, player: Player) {
     
-    
     let roomDocRef = database.collection("rooms").document("\(roomNo)")
     
     roomDocRef.setData([
@@ -276,6 +272,34 @@ extension HomeViewController {
     }
   }
   
+  
+  private func joinRoom(roomNo: Int, player: Player) {
+    let roomDocRef = database.collection("rooms").document("\(roomNo)")
+    roomDocRef.updateData([
+      "players": FieldValue.arrayUnion([
+        [
+          "name": player.name,
+          "cardsInHand": [],
+          "points": player.points,
+          "roundsJudged": player.roundsJudged,
+          "roundsWon": player.roundsWon,
+          "hasToPlay": player.hasToPlay
+        ]
+      ])
+    ]) { err in
+        if let err = err {
+          print(err)
+          let alertView = UIAlertController(title: "Cannot create room", message: "Something went wrong. Please try again", preferredStyle: .alert)
+          let ok = UIAlertAction(title: "OK", style: .default) { _ in
+          }
+          alertView.addAction(ok)
+          self.present(alertView, animated: true, completion: nil)
+          
+        } else {
+            print("Document successfully written!")
+        }
+    }
+  }
 }
 
 
