@@ -83,7 +83,8 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     guard let nameTable else { return }
 
     view.addSubview(scrollView)
-
+    nameTable.layer.backgroundColor = .init(red: 0, green: 0, blue: 0, alpha: 1)
+    nameTable.layer.borderWidth = 2.0
     scrollView.addSubview(nameTable)
     scrollView.addSubview(roomLabel)
     scrollView.addSubview(startButton)
@@ -118,17 +119,17 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     
     roomLabel.text = String(roomNumber)
     roomLabel.frame = CGRect(x: scrollView.width/3 + 20,
-                             y: view.height/6,
+                             y: (view.height/6) - 100,
                              width: scrollView.width-60,
                              height: 52)
     
     nameTable?.frame = CGRect(x: 30,
                              y: roomLabel.bottom + 20,
                              width: scrollView.width-60,
-                             height: 200)
+                             height: 300)
     
     startButton.frame = CGRect(x: 80,
-                               y: roomLabel.bottom+250,
+                               y: roomLabel.bottom+450,
                                width: (scrollView.width/2)+20,
                                height: 52)
     

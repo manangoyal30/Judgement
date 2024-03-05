@@ -191,7 +191,7 @@ class HomeViewController: UIViewController {
     scrollView.backgroundColor = .white
     
     nameInputField.frame = CGRect(x: 30, 
-                                  y: view.height/3,
+                                  y: view.height/4,
                                   width: scrollView.width-60,
                                   height: 52)
     
