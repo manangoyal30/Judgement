@@ -50,6 +50,7 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   }()
   
   @objc private func startButtonTapped() {
+    doc.updateData(["isRoomOpen" : false])
     let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
     self.navigationController?.pushViewController(gameRoomViewController, animated: true)
   }
@@ -83,6 +84,14 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
       if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
         self.startButton.isHidden = false
         self.view.layoutIfNeeded()
+      }
+    })
+    
+    doc.isRoomClosed(completion: { [weak self] isRoomClosed in
+      guard let self else { return }
+      if isRoomClosed {
+        let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
+        self.navigationController?.pushViewController(gameRoomViewController, animated: true)
       }
     })
   }

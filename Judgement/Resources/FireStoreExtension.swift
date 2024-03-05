@@ -30,4 +30,27 @@ extension DocumentReference {
             }
         }
     }
+  
+  func isRoomClosed(completion: @escaping (Bool) -> Void) {
+    self.addSnapshotListener { (querySnapshot, error) in
+      guard let document = querySnapshot else {
+          print("No room number found")
+          completion(false)
+          return
+      }
+
+      guard let data = document.data() else {
+          print("Document data was empty.")
+          completion(false)
+          return
+      }
+
+      if let isRoomOpen = data["isRoomOpen"] as? Bool, !isRoomOpen {
+          completion(true)
+      } else {
+          completion(false)
+      }
+      
+    }
+  }
 }

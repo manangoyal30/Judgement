@@ -246,6 +246,7 @@ extension HomeViewController {
     let roomDocRef = database.collection("rooms").document("\(roomNo)")
     
     roomDocRef.setData([
+      "isRoomOpen": true,
       "players": FieldValue.arrayUnion([
         [
           "name": player.name,
@@ -277,11 +278,17 @@ extension HomeViewController {
 
     roomDocRef.getDocument { (document, error) in
       if let document = document, document.exists {
-        if let players = document.data()?["players"] as? [[String: Any]],
+        if let isRoomOpen = document.data()?["isRoomOpen"] as? Bool, !isRoomOpen {
+          self.handleRoomError("Game already started by the host")
+        }
+        
+        else if let players = document.data()?["players"] as? [[String: Any]],
           players.contains(where: { ($0["name"] as? String) == player.name }) {
           self.handleNameError("Player name already exists")
           return
-        } else {
+        }
+        
+        else {
           roomDocRef.updateData([
             "players": FieldValue.arrayUnion([
               [
