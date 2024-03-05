@@ -17,6 +17,7 @@ class GameRoom: UIViewController {
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
   
+  var playerList: [Player] = []
   var playerNameList: [String] = []
   
   override func viewDidLoad() {
@@ -34,7 +35,8 @@ class GameRoom: UIViewController {
       }
       
       if let players = data["players"] as? [[String: Any]] {
-        self.playerNameList = players.compactMap { $0["name"] as? String }
+        self.mapPlayersFromFirestore(playerList: players)
+        self.setUpLayout()
       } else {
         self.playerNameList = []
       }
@@ -51,4 +53,59 @@ class GameRoom: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  private func setUpLayout() {
+    view.backgroundColor = .white
+    let totalPlayers = playerNameList.count
+    
+    // Sort the players list cyclically with currentPlayer first
+    var sortedPlayers = playerNameList
+    if let index = sortedPlayers.firstIndex(of: currentPlayer.name) {
+      sortedPlayers.rotateLeft(by: index)
+    }
+    
+    let centerX = view.width / 2
+    let centerY = view.height / 2
+    let horizontalRadius: CGFloat = 150
+    let verticalRadius: CGFloat = 250
+
+    // Create and position the labels
+    for (index, player) in sortedPlayers.enumerated() {
+      let angle = 2 * CGFloat.pi * CGFloat(index) / CGFloat(sortedPlayers.count)
+      let x = centerX + horizontalRadius * sin(angle)
+      let y = centerY + verticalRadius * cos(angle)
+
+      createLabel(at: CGPoint(x: x, y: y), text: "\(player)")
+    }
+  }
+  
+  func createLabel(at position: CGPoint, text: String) {
+      let label = UILabel(frame: CGRect(x: position.x - 50, y: position.y - 15, width: 100, height: 30))
+      label.text = text
+      label.textAlignment = .center
+      label.backgroundColor = .lightGray
+      view.addSubview(label)
+  }
+}
+
+extension GameRoom {
+  func mapPlayersFromFirestore(playerList: [[String: Any]]) {
+    for player in playerList {
+      if let name = player["name"] as? String,
+         let cardsInHand = player["cardsInHand"] as? [PlayingCard],
+         let points = player["points"] as? Int,
+         let roundsJudged = player["roundsJudged"] as? Int,
+         let roundsWon = player["roundsWon"] as? Int,
+         let hasToPlay = player["hasToPlay"] as? Bool {
+        
+        let player = Player(name: name,
+                            cardsInHand: cardsInHand,
+                            points: points,
+                            roundsJudged: roundsJudged,
+                            roundsWon: roundsWon,
+                            hasToPlay: hasToPlay)
+        self.playerNameList.append(name)
+        self.playerList.append(player)
+      }
+    }
+  }
 }

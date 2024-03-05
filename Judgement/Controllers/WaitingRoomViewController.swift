@@ -49,9 +49,19 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     return button
   }()
   
+  @objc private func startButtonTapped() {
+    let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
+    self.navigationController?.pushViewController(gameRoomViewController, animated: true)
+  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    startButton.addTarget(
+      self,
+      action: #selector(startButtonTapped),
+      for: .touchUpInside
+    )
     
     guard let nameTable else { return }
 
@@ -111,7 +121,6 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
 }
 
 extension WaitingRoomViewController {

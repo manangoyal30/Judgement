@@ -39,3 +39,10 @@ extension Notification.Name {
     /// Notificaiton  when user logs in
     static let didLogInNotification = Notification.Name("didLogInNotification")
 }
+
+extension Array {
+    mutating func rotateLeft(by places: Int) {
+        let offset = places % count
+        self = Array(self[offset ..< count] + self[0 ..< offset])
+    }
+}
