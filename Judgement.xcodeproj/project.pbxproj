@@ -16,6 +16,8 @@
 		13089D722B76001C004F41FF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13089D712B76001C004F41FF /* Extensions.swift */; };
 		1381A4612B91E7890084860C /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381A4602B91E7890084860C /* Player.swift */; };
 		1381A4632B91E7B50084860C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381A4622B91E7B50084860C /* Card.swift */; };
+		1381B2232B96B4700084860C /* GameRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381B2222B96B4700084860C /* GameRoom.swift */; };
+		1381B2252B96BA570084860C /* FireStoreExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381B2242B96BA570084860C /* FireStoreExtension.swift */; };
 		13B383F32B7C9D1E00766E21 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 13B383F22B7C9D1E00766E21 /* FirebaseAnalytics */; };
 		13B383F52B7C9D1E00766E21 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 13B383F42B7C9D1E00766E21 /* FirebaseAnalyticsOnDeviceConversion */; };
 		13B383F72B7C9D1E00766E21 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 13B383F62B7C9D1E00766E21 /* FirebaseAnalyticsSwift */; };
@@ -62,6 +64,8 @@
 		13089D712B76001C004F41FF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1381A4602B91E7890084860C /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Player.swift; path = Judgement/Controllers/Player.swift; sourceTree = SOURCE_ROOT; };
 		1381A4622B91E7B50084860C /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Card.swift; path = Judgement/Controllers/Card.swift; sourceTree = SOURCE_ROOT; };
+		1381B2222B96B4700084860C /* GameRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRoom.swift; sourceTree = "<group>"; };
+		1381B2242B96BA570084860C /* FireStoreExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireStoreExtension.swift; sourceTree = "<group>"; };
 		13C1A6692B7F20550072A7C1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		13E321C72B8F451000197B27 /* WaitingRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingRoomViewController.swift; sourceTree = "<group>"; };
 		6C6FFA76AA504BD3FD5630C9 /* Pods-Judgement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Judgement.release.xcconfig"; path = "Target Support Files/Pods-Judgement/Pods-Judgement.release.xcconfig"; sourceTree = "<group>"; };
@@ -133,6 +137,7 @@
 				13089D5C2B75FEB1004F41FF /* AppDelegate.swift */,
 				13089D5E2B75FEB1004F41FF /* SceneDelegate.swift */,
 				13089D712B76001C004F41FF /* Extensions.swift */,
+				1381B2242B96BA570084860C /* FireStoreExtension.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -142,6 +147,7 @@
 			children = (
 				13089D602B75FEB1004F41FF /* HomeViewController.swift */,
 				13E321C72B8F451000197B27 /* WaitingRoomViewController.swift */,
+				1381B2222B96B4700084860C /* GameRoom.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -307,12 +313,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1381B2232B96B4700084860C /* GameRoom.swift in Sources */,
 				13089D612B75FEB1004F41FF /* HomeViewController.swift in Sources */,
 				13089D5D2B75FEB1004F41FF /* AppDelegate.swift in Sources */,
 				1381A4632B91E7B50084860C /* Card.swift in Sources */,
 				13089D5F2B75FEB1004F41FF /* SceneDelegate.swift in Sources */,
 				13E321C82B8F451000197B27 /* WaitingRoomViewController.swift in Sources */,
 				1381A4612B91E7890084860C /* Player.swift in Sources */,
+				1381B2252B96BA570084860C /* FireStoreExtension.swift in Sources */,
 				13089D722B76001C004F41FF /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

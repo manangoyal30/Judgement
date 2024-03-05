@@ -65,31 +65,17 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     nameTable.delegate = self
     nameTable.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
 
-    doc.addSnapshotListener { (querySnapshot, error) in
-      guard let document = querySnapshot else {
-        print("No room number found")
-        return
-      }
+    doc.fetchPlayerNames(completion: { [weak self] playerNameList in
+      guard let self else { return }
+      self.playerNameList = playerNameList
+      self.nameTable?.reloadData()
       
-      guard let data = document.data() else {
-        print("Document data was empty.")
-        return
-      }
-      
-      if let players = data["players"] as? [[String: Any]] {
-        self.playerNameList = players.compactMap { $0["name"] as? String }
-      } else {
-        self.playerNameList = ["No players found"]
-      }
-      nameTable.reloadData()
-      
-      if self.playerNameList.count > 1 && self.currentPlayer.name == self.playerNameList[0] {
+      if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
         self.startButton.isHidden = false
         self.view.layoutIfNeeded()
       }
-    }
+    })
   }
-  
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()

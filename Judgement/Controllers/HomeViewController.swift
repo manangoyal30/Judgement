@@ -127,10 +127,7 @@ class HomeViewController: UIViewController {
       let waitingRoom = WaitingRoomViewController(roomNumber: Int(roomNumber) ?? 0, currentPlayer: player)
       self.navigationController?.pushViewController(waitingRoom, animated: true)
     })
-    
-    
   }
-  
   
   @objc private func createRoomButtonTapped() {
     roomInputField.resignFirstResponder()
