@@ -51,8 +51,24 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   
   @objc private func startButtonTapped() {
     doc.updateData(["isRoomOpen" : false])
-    let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
-    self.navigationController?.pushViewController(gameRoomViewController, animated: true)
+    var scoreDictionary: [String: Int] = [:]
+    for player in playerNameList {
+      scoreDictionary[player] = 0
+    }
+    doc.updateData(["scoreBoard": scoreDictionary]) { [weak self] error in
+      guard let self else { return }
+      if let error = error {
+        print(error)
+        let alertView = UIAlertController(title: "Cannot start game", message: "Something went wrong. Please try again", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default) { _ in
+        }
+        alertView.addAction(ok)
+        self.present(alertView, animated: true, completion: nil)
+      } else {
+        let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
+        self.navigationController?.pushViewController(gameRoomViewController, animated: true)
+      }
+    }
   }
   
   override func viewDidLoad() {
