@@ -50,12 +50,14 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   }()
   
   @objc private func startButtonTapped() {
-    doc.updateData(["isRoomOpen" : false])
     var scoreDictionary: [String: Int] = [:]
     for player in playerNameList {
       scoreDictionary[player] = 0
     }
-    doc.updateData(["scoreBoard": scoreDictionary]) { [weak self] error in
+    doc.updateData(["scoreBoard": scoreDictionary,
+                    "isRoomOpen" : false
+                   ]
+    ) { [weak self] error in
       guard let self else { return }
       if let error = error {
         print(error)
@@ -92,25 +94,36 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     nameTable.dataSource = self
     nameTable.delegate = self
     nameTable.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-
-    doc.fetchPlayerNames(completion: { [weak self] playerNameList in
-      guard let self else { return }
-      self.playerNameList = playerNameList
-      self.nameTable?.reloadData()
-      
-      if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
-        self.startButton.isHidden = false
-        self.view.layoutIfNeeded()
-      }
-    })
     
-    doc.isRoomClosed(completion: { [weak self] isRoomClosed in
-      guard let self else { return }
-      if isRoomClosed {
-        let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
-        self.navigationController?.pushViewController(gameRoomViewController, animated: true)
+    doc.addSnapshotListener { (querySnapshot, error) in
+        guard let document = querySnapshot else {
+            print("No room number found")
+            return
+        }
+
+        guard let data = document.data() else {
+            print("Document data was empty.")
+            return
+        }
+
+        if let players = data["players"] as? [[String: Any]] {
+          let playerNameList = players.compactMap { $0["name"] as? String }
+          self.playerNameList = playerNameList
+          self.nameTable?.reloadData()
+          
+          if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
+            self.startButton.isHidden = false
+            self.view.layoutIfNeeded()
+          }
+        } else {
+          self.playerNameList = ["No players found"]
+        }
+        if let isRoomOpen = data["isRoomOpen"] as? Bool, !isRoomOpen {
+          
+          let gameRoomViewController = GameRoom(roomNumber: self.roomNumber, currentPlayer: self.currentPlayer)
+          self.navigationController?.pushViewController(gameRoomViewController, animated: true)
       }
-    })
+    }
   }
   
   override func viewDidLayoutSubviews() {
