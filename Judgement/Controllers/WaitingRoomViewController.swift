@@ -20,6 +20,8 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
   
+  var firestoreListener: ListenerRegistration?
+  
   var playerNameList: [String] = []
   
   private let scrollView: UIScrollView = {
@@ -66,21 +68,28 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
         }
         alertView.addAction(ok)
         self.present(alertView, animated: true, completion: nil)
-      } else {
-        let gameRoomViewController = GameRoom(roomNumber: roomNumber, currentPlayer: currentPlayer)
-        self.navigationController?.pushViewController(gameRoomViewController, animated: true)
       }
     }
   }
   
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
     startButton.addTarget(
       self,
       action: #selector(startButtonTapped),
       for: .touchUpInside
     )
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    removeFirestoreListener()
+  }
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    setupFirestoreListener()
     
     guard let nameTable else { return }
 
@@ -94,36 +103,6 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     nameTable.dataSource = self
     nameTable.delegate = self
     nameTable.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-    
-    doc.addSnapshotListener { (querySnapshot, error) in
-        guard let document = querySnapshot else {
-            print("No room number found")
-            return
-        }
-
-        guard let data = document.data() else {
-            print("Document data was empty.")
-            return
-        }
-
-        if let players = data["players"] as? [[String: Any]] {
-          let playerNameList = players.compactMap { $0["name"] as? String }
-          self.playerNameList = playerNameList
-          self.nameTable?.reloadData()
-          
-          if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
-            self.startButton.isHidden = false
-            self.view.layoutIfNeeded()
-          }
-        } else {
-          self.playerNameList = ["No players found"]
-        }
-        if let isRoomOpen = data["isRoomOpen"] as? Bool, !isRoomOpen {
-          
-          let gameRoomViewController = GameRoom(roomNumber: self.roomNumber, currentPlayer: self.currentPlayer)
-          self.navigationController?.pushViewController(gameRoomViewController, animated: true)
-      }
-    }
   }
   
   override func viewDidLayoutSubviews() {
@@ -172,4 +151,40 @@ extension WaitingRoomViewController {
     cell.textLabel?.text = playerNameList[indexPath.row]
     return cell
   }
+  
+  func setupFirestoreListener() {
+      // Register the Firestore listener
+      firestoreListener = Firestore.firestore().collection("rooms").document("\(roomNumber)")
+          .addSnapshotListener { querySnapshot, error in
+            guard let document = querySnapshot else {
+                print("No room number found")
+                return
+            }
+            guard let data = document.data() else {
+                print("Document data was empty.")
+                return
+            }
+            if let players = data["players"] as? [[String: Any]] {
+              let playerNameList = players.compactMap { $0["name"] as? String }
+              self.playerNameList = playerNameList
+              self.nameTable?.reloadData()
+              
+              if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
+                self.startButton.isHidden = false
+                self.view.layoutIfNeeded()
+              }
+            } else {
+              self.playerNameList = ["No players found"]
+            }
+            if let isRoomOpen = data["isRoomOpen"] as? Bool, !isRoomOpen {
+              let gameRoomViewController = GameRoom(roomNumber: self.roomNumber, currentPlayer: self.currentPlayer)
+              self.navigationController?.pushViewController(gameRoomViewController, animated: true)
+            }
+          }
+      }
+  
+  func removeFirestoreListener() {
+          // Remove the Firestore listener
+          firestoreListener?.remove()
+      }
 }
