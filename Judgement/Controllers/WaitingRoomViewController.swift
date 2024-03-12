@@ -8,13 +8,16 @@
 import UIKit
 import FirebaseFirestore
 
-class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, 
+                                 UIPickerViewDelegate, UIPickerViewDataSource {
   
   private let currentPlayer: Player
   
   private var roomNumber: Int
   
   private var nameTable: UITableView?
+  
+  private var totalRounds: Int = 10
   
   let database = Firestore.firestore()
     
@@ -39,6 +42,20 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     return label
   }()
   
+  private let roundLabel: UILabel = {
+    let label = UILabel()
+    label.backgroundColor = .clear
+    label.isHidden = false
+    label.font = .systemFont(ofSize: 16, weight: .bold)
+    label.textColor = .systemGreen
+    label.text = "Number of rounds"
+    return label
+  }()
+  
+  private var roundPicker: UIPickerView?
+  
+  var pickerData: [Int] = [1]
+  
   private let startButton: UIButton = {
     let button = UIButton()
     button.setTitle("Start game", for: .normal)
@@ -57,7 +74,8 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
       scoreDictionary[player] = 0
     }
     doc.updateData(["scoreBoard": scoreDictionary,
-                    "isRoomOpen" : false
+                    "isRoomOpen": false,
+                    "totalRounds": totalRounds
                    ]
     ) { [weak self] error in
       guard let self else { return }
@@ -90,15 +108,20 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     super.viewDidLoad()
     
     setupFirestoreListener()
-    
-    guard let nameTable else { return }
 
+    guard let nameTable, let roundPicker else { return }
+    
     view.addSubview(scrollView)
     nameTable.layer.backgroundColor = .init(red: 0, green: 0, blue: 0, alpha: 1)
     nameTable.layer.borderWidth = 2.0
-    scrollView.addSubview(nameTable)
     scrollView.addSubview(roomLabel)
+    scrollView.addSubview(nameTable)
+    scrollView.addSubview(roundLabel)
+    scrollView.addSubview(roundPicker)
     scrollView.addSubview(startButton)
+    
+    roundPicker.delegate = self
+    roundPicker.dataSource = self
     
     nameTable.dataSource = self
     nameTable.delegate = self
@@ -118,7 +141,18 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     nameTable?.frame = CGRect(x: 30,
                              y: roomLabel.bottom + 20,
                              width: scrollView.width-60,
-                             height: 300)
+                             height: 250)
+    
+    roundLabel.frame = CGRect(x: (scrollView.width/3) - 10,
+                             y: roomLabel.bottom + 300,
+                             width: scrollView.width-60,
+                             height: 24)
+    
+    roundPicker?.frame = CGRect(x: (scrollView.width/3) - 10,
+                             y: roomLabel.bottom + 300,
+                             width: scrollView.width-240,
+                             height: 100)
+    
     
     startButton.frame = CGRect(x: 80,
                                y: roomLabel.bottom+450,
@@ -133,6 +167,7 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     self.roomNumber = roomNumber
     self.currentPlayer = currentPlayer
     self.nameTable = UITableView()
+    self.roundPicker = UIPickerView()
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -167,6 +202,9 @@ extension WaitingRoomViewController {
             if let players = data["players"] as? [[String: Any]] {
               let playerNameList = players.compactMap { $0["name"] as? String }
               self.playerNameList = playerNameList
+              let maxPickerValue = min(Int(floor(51.0 / Double(playerNameList.count))), 10)
+              self.pickerData = Array(1...maxPickerValue)
+              self.roundPicker?.reloadAllComponents()
               self.nameTable?.reloadData()
               
               if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
@@ -187,4 +225,22 @@ extension WaitingRoomViewController {
           // Remove the Firestore listener
           firestoreListener?.remove()
       }
+}
+
+extension WaitingRoomViewController {
+  func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    return 1 // We're using a single column
+  }
+
+  func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    return pickerData.count
+  }
+  
+  func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    return "\(pickerData[row])"
+  }
+
+  func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    totalRounds = pickerData[row]
+  }
 }
