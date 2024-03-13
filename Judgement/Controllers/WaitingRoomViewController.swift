@@ -168,6 +168,8 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     self.currentPlayer = currentPlayer
     self.nameTable = UITableView()
     self.roundPicker = UIPickerView()
+    self.roundPicker?.isHidden = true
+    self.roundLabel.isHidden = true
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -209,6 +211,8 @@ extension WaitingRoomViewController {
               
               if playerNameList.count > 1 && self.currentPlayer.name == playerNameList[0] {
                 self.startButton.isHidden = false
+                self.roundPicker?.isHidden = false
+                self.roundLabel.isHidden = false
                 self.view.layoutIfNeeded()
               }
             } else {

@@ -13,6 +13,8 @@ class GameRoom: UIViewController {
   
   private let roomNumber: Int
   
+  private var totalRounds: Int = 0
+  
   let database = Firestore.firestore()
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
@@ -23,7 +25,7 @@ class GameRoom: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    doc.addSnapshotListener { (querySnapshot, error) in
+    doc.getDocument { (querySnapshot, error) in
       guard let document = querySnapshot else {
         print("No room number found")
         return
@@ -32,6 +34,10 @@ class GameRoom: UIViewController {
       guard let data = document.data() else {
         print("Document data was empty.")
         return
+      }
+      
+      if let totalRounds = data["totalRounds"] as? Int {
+        self.totalRounds = totalRounds
       }
       
       if let players = data["players"] as? [[String: Any]] {
@@ -55,7 +61,6 @@ class GameRoom: UIViewController {
   
   private func setUpLayout() {
     view.backgroundColor = .white
-    let totalPlayers = playerNameList.count
     
     // Sort the players list cyclically with currentPlayer first
     var sortedPlayers = playerNameList
@@ -67,14 +72,21 @@ class GameRoom: UIViewController {
     let centerY = view.height / 2
     let horizontalRadius: CGFloat = 150
     let verticalRadius: CGFloat = 250
+    
+    let horizontalCardRadius: CGFloat = 80
+    let verticalCardRadius: CGFloat = 150
 
     // Create and position the labels
     for (index, player) in sortedPlayers.enumerated() {
       let angle = 2 * CGFloat.pi * CGFloat(index) / CGFloat(sortedPlayers.count)
       let x = centerX + horizontalRadius * sin(angle)
       let y = centerY + verticalRadius * cos(angle)
+      
+      let cardx = centerX + horizontalCardRadius * sin(angle)
+      let cardy = centerY + verticalCardRadius * cos(angle)
 
       createLabel(at: CGPoint(x: x, y: y), text: "\(player)")
+      createCardHolder(at: CGPoint(x: cardx, y: cardy))
     }
   }
   
@@ -84,6 +96,12 @@ class GameRoom: UIViewController {
       label.textAlignment = .center
       label.backgroundColor = .lightGray
       view.addSubview(label)
+  }
+  
+  func createCardHolder(at position: CGPoint) {
+      let cardHolder = UIView(frame: CGRect(x: position.x - 25, y: position.y - 30, width: 50, height: 75))
+      cardHolder.backgroundColor = .red
+      view.addSubview(cardHolder)
   }
 }
 
@@ -107,5 +125,11 @@ extension GameRoom {
         self.playerList.append(player)
       }
     }
+  }
+}
+
+extension GameRoom {
+  private func startRound(round: Int) {
+    
   }
 }
