@@ -150,10 +150,12 @@ class HomeViewController: UIViewController {
                         hasToPlay: false)
     
     
-    createRoomAndAddPlayer(roomNo: randomID, player: player)
+    let success = createRoomAndAddPlayer(roomNo: randomID, player: player)
         
-    let waitingRoom = WaitingRoomViewController(roomNumber: randomID, currentPlayer: player)
-    self.navigationController?.pushViewController(waitingRoom, animated: true)
+    if success {
+      let waitingRoom = WaitingRoomViewController(roomNumber: randomID, currentPlayer: player)
+      self.navigationController?.pushViewController(waitingRoom, animated: true)
+    }
   }
   
   override func viewDidLoad() {
@@ -241,10 +243,10 @@ extension HomeViewController {
 // MARK: FIRESTORE
 extension HomeViewController {
   
-  private func createRoomAndAddPlayer(roomNo: Int, player: Player) {
+  private func createRoomAndAddPlayer(roomNo: Int, player: Player) -> Bool {
     
     let roomDocRef = database.collection("rooms").document("\(roomNo)")
-    
+    var success = true
     roomDocRef.setData([
       "isRoomOpen": true,
       "players": FieldValue.arrayUnion([
@@ -265,11 +267,12 @@ extension HomeViewController {
           }
           alertView.addAction(ok)
           self.present(alertView, animated: true, completion: nil)
-          
+          success = false
         } else {
             print("Document successfully written!")
         }
     }
+    return success
   }
   
   

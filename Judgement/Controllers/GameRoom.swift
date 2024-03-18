@@ -43,7 +43,10 @@ class GameRoom: UIViewController {
       if let players = data["players"] as? [[String: Any]] {
         self.mapPlayersFromFirestore(playerList: players)
         self.setUpLayout()
+        self.startGame()
       } else {
+        let homeViewController = HomeViewController()
+        self.navigationController?.popToViewController(homeViewController, animated: true)
         self.playerNameList = []
       }
     }
@@ -106,6 +109,15 @@ class GameRoom: UIViewController {
 }
 
 extension GameRoom {
+  private func startGame() {
+    for round in 1...totalRounds {
+      print(round)
+      startRound(round: round)
+    }
+  }
+}
+
+extension GameRoom {
   func mapPlayersFromFirestore(playerList: [[String: Any]]) {
     for player in playerList {
       if let name = player["name"] as? String,
@@ -130,6 +142,8 @@ extension GameRoom {
 
 extension GameRoom {
   private func startRound(round: Int) {
+    let deck = CardDeck()
+    deck.shuffleDeck()
     
   }
 }
