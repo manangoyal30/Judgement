@@ -102,7 +102,9 @@ class GameRoom: UIViewController {
   }
   
   func createCardHolder(at position: CGPoint) {
-      let cardHolder = UIView(frame: CGRect(x: position.x - 25, y: position.y - 30, width: 50, height: 75))
+    let cardHolder = UIImageView(frame: CGRect(x: position.x - 35, y: position.y - 50, width: 70, height: 100))
+    // TODO: TESTING
+//      cardHolder.image = UIImage(named: "AS")
       cardHolder.backgroundColor = .red
       view.addSubview(cardHolder)
   }
@@ -144,6 +146,12 @@ extension GameRoom {
   private func startRound(round: Int) {
     let deck = CardDeck()
     deck.shuffleDeck()
-    
+    for i in 1...round {
+      for player in playerList {
+        if let card = deck.drawCard() {
+          player.cardsInHand.append(card)
+        }
+      }
+    }
   }
 }

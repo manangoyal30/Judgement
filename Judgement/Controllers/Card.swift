@@ -28,8 +28,8 @@ struct PlayingCard {
         self.cardSuit = suit
     }
     
-    func cardName() {
-        print("\(cardValue) of \(cardSuit)")
+    func cardName() -> String {
+        "\(cardValue) of \(cardSuit)"
     }
 }
 
@@ -39,8 +39,9 @@ class CardDeck {
     var deck: [PlayingCard]
     
     init() {
-        cardsRemaining = 52
-        deck = []
+      cardsRemaining = 52
+      deck = []
+      createDeck()
     }
     
     func createDeck() {
@@ -71,25 +72,24 @@ class CardDeck {
         
     }
     
-    func drawCard() {
+    func drawCard() -> PlayingCard? {
         
       //  let cardDrawn = deck.randomElement()!
         guard let cardDrawn = deck.popLast() else {
             print("No cards left in deck!")
-            return
+            return nil
         }
    //     deck.remove(at: cardDrawn)
         if self.cardsRemaining >= 1 {
          
             self.cardsRemaining -= 1
             
-            print("You drew:")
-            print(cardDrawn.cardName())
-            print(cardsRemaining)
+           return cardDrawn
         }
         
         else {
-            print("No cards left in deck!")
+          print("No cards left in deck!")
+          return nil
         }
     }
 }

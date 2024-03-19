@@ -17,7 +17,7 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
   
   private var nameTable: UITableView?
   
-  private var totalRounds: Int = 10
+  private var totalRounds: Int = 1
   
   let database = Firestore.firestore()
     
@@ -64,7 +64,8 @@ class WaitingRoomViewController: UIViewController, UITableViewDataSource, UITabl
     button.layer.cornerRadius = 12
     button.layer.masksToBounds = true
     button.titleLabel?.font = .systemFont(ofSize: 16, weight: .bold)
-    button.isHidden = true
+    // TODO: TESTING
+    button.isHidden = false
     return button
   }()
   
