@@ -7,14 +7,26 @@
 
 enum CardSuits: String, CaseIterable {
     
-    case Hearts = "Hearts"
-    case Spades = "Spades"
-    case Clubs = "Clubs"
-    case Diamonds = "Diamonds"
+    case Hearts = "H"
+    case Spades = "S"
+    case Clubs = "C"
+    case Diamonds = "D"
 }
 
-enum CardValue: Int, CaseIterable {
-    case two = 2, three, four, five, six, seven, eight, nine, ten, jack, queen, king, ace
+enum CardValue: String, CaseIterable {
+    case two = "2",
+         three = "3",
+         four = "4",
+         five = "5",
+         six = "6",
+         seven = "7",
+         eight = "8",
+         nine = "9",
+         ten = "10",
+         jack = "J",
+         queen = "Q",
+         king = "K",
+         ace = "A"
 }
 
 struct PlayingCard {
@@ -29,7 +41,7 @@ struct PlayingCard {
     }
     
     func cardName() -> String {
-        "\(cardValue) of \(cardSuit)"
+      "\(cardValue.rawValue)\(cardSuit.rawValue)"
     }
 }
 

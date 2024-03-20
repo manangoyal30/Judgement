@@ -4,6 +4,7 @@
 //
 //  Created by manan.goyal on 1/3/2024.
 //
+import UIKit
 
 class Player {
     var name: String
@@ -12,6 +13,7 @@ class Player {
     var roundsJudged: Int
     var roundsWon: Int
     var hasToPlay: Bool
+    var cardHolder: UIImageView?
 
     init(name: String, cardsInHand: [PlayingCard], points: Int, roundsJudged: Int, roundsWon: Int, hasToPlay: Bool) {
         self.name = name

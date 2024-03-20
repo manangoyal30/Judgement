@@ -89,7 +89,7 @@ class GameRoom: UIViewController {
       let cardy = centerY + verticalCardRadius * cos(angle)
 
       createLabel(at: CGPoint(x: x, y: y), text: "\(player)")
-      createCardHolder(at: CGPoint(x: cardx, y: cardy))
+      createCardHolder(for: player, at: CGPoint(x: cardx, y: cardy))
     }
   }
   
@@ -101,8 +101,9 @@ class GameRoom: UIViewController {
       view.addSubview(label)
   }
   
-  func createCardHolder(at position: CGPoint) {
+  func createCardHolder(for playerName: String, at position: CGPoint) {
     let cardHolder = UIImageView(frame: CGRect(x: position.x - 35, y: position.y - 50, width: 70, height: 100))
+    playerList.first(where: {$0.name == playerName})?.cardHolder = cardHolder
     // TODO: TESTING
 //      cardHolder.image = UIImage(named: "AS")
       cardHolder.backgroundColor = .red
@@ -150,6 +151,7 @@ extension GameRoom {
       for player in playerList {
         if let card = deck.drawCard() {
           player.cardsInHand.append(card)
+          player.cardHolder?.image = UIImage(named: card.cardName())
         }
       }
     }
