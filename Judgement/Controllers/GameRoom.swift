@@ -15,6 +15,8 @@ class GameRoom: UIViewController {
   
   private var totalRounds: Int = 0
   
+  var collectionView: UICollectionView?
+  
   let database = Firestore.firestore()
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
@@ -43,6 +45,7 @@ class GameRoom: UIViewController {
       if let players = data["players"] as? [[String: Any]] {
         self.mapPlayersFromFirestore(playerList: players)
         self.setUpLayout()
+        self.setUpCardCollectionView()
         self.startGame()
       } else {
         let homeViewController = HomeViewController()
@@ -109,6 +112,36 @@ class GameRoom: UIViewController {
       cardHolder.backgroundColor = .red
       view.addSubview(cardHolder)
   }
+  
+  func setUpCardCollectionView() {
+    let layout = UICollectionViewFlowLayout()
+    layout.scrollDirection = .horizontal
+    layout.itemSize = CGSize(width: 70, height: 100)  // This should match the size of your card holder
+    layout.minimumLineSpacing = -35
+    collectionView = UICollectionView(frame: CGRect(x: 10 , y: view.bottom - 200, width: 400, height: 100), collectionViewLayout: layout)
+    guard let collectionView else { return }
+    collectionView.dataSource = self
+    collectionView.delegate = self
+    collectionView.register(CardCell.self, forCellWithReuseIdentifier: "CardCell")
+    self.view.addSubview(collectionView)
+
+  }
+}
+
+extension GameRoom: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    return currentPlayer.cardsInHand.count
+  }
+
+  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+      guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CardCell", for: indexPath) as? CardCell else {
+          return UICollectionViewCell()
+      }
+    let imageName = currentPlayer.cardsInHand[indexPath.item].cardName()
+      cell.imageView?.image = UIImage(named: imageName)
+      return cell
+  }
+
 }
 
 extension GameRoom {
@@ -147,13 +180,14 @@ extension GameRoom {
   private func startRound(round: Int) {
     let deck = CardDeck()
     deck.shuffleDeck()
-    for i in 1...round {
-      for player in playerList {
+    
+    for player in playerList {
+      for i in 1...10 {
         if let card = deck.drawCard() {
           player.cardsInHand.append(card)
-          player.cardHolder?.image = UIImage(named: card.cardName())
         }
       }
     }
+    currentPlayer.cardsInHand = playerList.first(where: {$0.name == currentPlayer.name})?.cardsInHand ?? []
   }
 }

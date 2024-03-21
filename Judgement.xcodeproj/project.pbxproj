@@ -14,6 +14,7 @@
 		13089D662B75FEB3004F41FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13089D652B75FEB3004F41FF /* Assets.xcassets */; };
 		13089D692B75FEB3004F41FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 13089D672B75FEB3004F41FF /* LaunchScreen.storyboard */; };
 		13089D722B76001C004F41FF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13089D712B76001C004F41FF /* Extensions.swift */; };
+		1348AF8C2BAB07B800C09997 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1348AF8B2BAB07B800C09997 /* CardView.swift */; };
 		1381A4612B91E7890084860C /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381A4602B91E7890084860C /* Player.swift */; };
 		1381A4632B91E7B50084860C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381A4622B91E7B50084860C /* Card.swift */; };
 		1381B2232B96B4700084860C /* GameRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1381B2222B96B4700084860C /* GameRoom.swift */; };
@@ -62,6 +63,7 @@
 		13089D682B75FEB3004F41FF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		13089D6A2B75FEB3004F41FF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		13089D712B76001C004F41FF /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		1348AF8B2BAB07B800C09997 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		1381A4602B91E7890084860C /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Player.swift; path = Judgement/Controllers/Player.swift; sourceTree = SOURCE_ROOT; };
 		1381A4622B91E7B50084860C /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Card.swift; path = Judgement/Controllers/Card.swift; sourceTree = SOURCE_ROOT; };
 		1381B2222B96B4700084860C /* GameRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameRoom.swift; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 				13089D622B75FEB1004F41FF /* Main.storyboard */,
 				13089D652B75FEB3004F41FF /* Assets.xcassets */,
 				13089D672B75FEB3004F41FF /* LaunchScreen.storyboard */,
+				1348AF8B2BAB07B800C09997 /* CardView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 				13089D612B75FEB1004F41FF /* HomeViewController.swift in Sources */,
 				13089D5D2B75FEB1004F41FF /* AppDelegate.swift in Sources */,
 				1381A4632B91E7B50084860C /* Card.swift in Sources */,
+				1348AF8C2BAB07B800C09997 /* CardView.swift in Sources */,
 				13089D5F2B75FEB1004F41FF /* SceneDelegate.swift in Sources */,
 				13E321C82B8F451000197B27 /* WaitingRoomViewController.swift in Sources */,
 				1381A4612B91E7890084860C /* Player.swift in Sources */,
