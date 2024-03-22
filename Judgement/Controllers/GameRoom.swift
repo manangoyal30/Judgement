@@ -17,6 +17,8 @@ class GameRoom: UIViewController {
   
   var collectionView: UICollectionView?
   
+  var previouslySelectedIndexPath: IndexPath?
+
   let database = Firestore.firestore()
     
   lazy var doc = database.collection("rooms").document("\(roomNumber)")
@@ -107,6 +109,7 @@ class GameRoom: UIViewController {
   func createCardHolder(for playerName: String, at position: CGPoint) {
     let cardHolder = UIImageView(frame: CGRect(x: position.x - 35, y: position.y - 50, width: 70, height: 100))
     playerList.first(where: {$0.name == playerName})?.cardHolder = cardHolder
+    currentPlayer.cardHolder = playerList.first(where: {$0.name == currentPlayer.name})?.cardHolder
     // TODO: TESTING
 //      cardHolder.image = UIImage(named: "AS")
       cardHolder.backgroundColor = .red
@@ -118,10 +121,11 @@ class GameRoom: UIViewController {
     layout.scrollDirection = .horizontal
     layout.itemSize = CGSize(width: 70, height: 100)  // This should match the size of your card holder
     layout.minimumLineSpacing = -35
-    collectionView = UICollectionView(frame: CGRect(x: 10 , y: view.bottom - 200, width: 400, height: 100), collectionViewLayout: layout)
+    collectionView = UICollectionView(frame: CGRect(x: 10 , y: view.bottom - 200, width: 400, height: 150), collectionViewLayout: layout)
     guard let collectionView else { return }
     collectionView.dataSource = self
     collectionView.delegate = self
+    collectionView.allowsMultipleSelection = false
     collectionView.register(CardCell.self, forCellWithReuseIdentifier: "CardCell")
     self.view.addSubview(collectionView)
 
@@ -142,6 +146,37 @@ extension GameRoom: UICollectionViewDataSource, UICollectionViewDelegateFlowLayo
       return cell
   }
 
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    let cell = collectionView.cellForItem(at: indexPath) as? CardCell
+    
+    if let previousIndexPath = previouslySelectedIndexPath {
+           let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CardCell
+           UIView.animate(withDuration: 0.3) {
+               previousCell?.transform = CGAffineTransform.identity
+           }
+       }
+    
+    if previouslySelectedIndexPath == indexPath {
+      // The cell was already selected and has been tapped again
+      currentPlayer.cardHolder?.image = cell?.imageView?.image
+      currentPlayer.cardsInHand.remove(at: indexPath.row)
+      collectionView.reloadData()
+      previouslySelectedIndexPath = nil
+      } else {
+        // The cell is being selected for the first time
+        UIView.animate(withDuration: 0) {
+            cell?.transform = CGAffineTransform(translationX: 0, y: -20)
+        }
+        previouslySelectedIndexPath = indexPath
+    }
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    let cell = collectionView.cellForItem(at: indexPath)
+    UIView.animate(withDuration: 0) {
+      cell?.transform = CGAffineTransform.identity
+    }
+  }
 }
 
 extension GameRoom {
