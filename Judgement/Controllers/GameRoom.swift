@@ -55,6 +55,8 @@ class GameRoom: UIViewController {
         self.playerNameList = []
       }
     }
+    
+    addListener()
   }
   
   init(roomNumber: Int, currentPlayer: Player) {
@@ -151,7 +153,7 @@ extension GameRoom: UICollectionViewDataSource, UICollectionViewDelegateFlowLayo
     
     if let previousIndexPath = previouslySelectedIndexPath {
            let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CardCell
-           UIView.animate(withDuration: 0.3) {
+           UIView.animate(withDuration: 0) {
                previousCell?.transform = CGAffineTransform.identity
            }
        }
@@ -159,9 +161,11 @@ extension GameRoom: UICollectionViewDataSource, UICollectionViewDelegateFlowLayo
     if previouslySelectedIndexPath == indexPath {
       // The cell was already selected and has been tapped again
       currentPlayer.cardHolder?.image = cell?.imageView?.image
+      let cardPlayed = currentPlayer.cardsInHand[indexPath.row]
       currentPlayer.cardsInHand.remove(at: indexPath.row)
       collectionView.reloadData()
       previouslySelectedIndexPath = nil
+      nextTurn(currentPlayer: currentPlayer, cardPlayed: cardPlayed )
       } else {
         // The cell is being selected for the first time
         UIView.animate(withDuration: 0) {
@@ -190,7 +194,9 @@ extension GameRoom {
 
 extension GameRoom {
   func mapPlayersFromFirestore(playerList: [[String: Any]]) {
+    var card: String
     for player in playerList {
+      card = player["currentCard"] as? String ?? ""
       if let name = player["name"] as? String,
          let cardsInHand = player["cardsInHand"] as? [PlayingCard],
          let points = player["points"] as? Int,
@@ -204,9 +210,50 @@ extension GameRoom {
                             roundsJudged: roundsJudged,
                             roundsWon: roundsWon,
                             hasToPlay: hasToPlay)
+       
+        if let c = PlayingCard(name: card) {
+          player.currentCard = c
+        }
         self.playerNameList.append(name)
         self.playerList.append(player)
       }
+    }
+  }
+  
+  private func updatePlayerList() {
+    doc.getDocument { (querySnapshot, error) in
+      guard let document = querySnapshot else {
+        print("No room number found")
+        return
+      }
+      
+      guard let data = document.data() else {
+        print("Document data was empty.")
+        return
+      }
+      
+      if let totalRounds = data["totalRounds"] as? Int {
+        self.totalRounds = totalRounds
+      }
+      
+      if let players = data["players"] as? [[String: Any]] {
+        self.mapPlayersFromFirestore(playerList: players)
+      }
+    }
+  }
+  
+  func nextTurn(currentPlayer: Player, cardPlayed: PlayingCard) {
+
+    doc.getDocument { (document, error) in
+        if let document = document, document.exists {
+            var players = document.data()?["players"] as? [[String: Any]]
+          if let index = players?.firstIndex(where: { ($0["name"] as? String) == currentPlayer.name }) {
+              players?[index]["currentCard"] = cardPlayed.cardName()
+            self.doc.setData(["players": players], merge: true)
+            }
+        } else {
+            print("Document does not exist")
+        }
     }
   }
 }
@@ -224,5 +271,34 @@ extension GameRoom {
       }
     }
     currentPlayer.cardsInHand = playerList.first(where: {$0.name == currentPlayer.name})?.cardsInHand ?? []
+  }
+  
+  private func addListener() {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      self.doc.addSnapshotListener() { (querySnapshot, error) in
+        guard let document = querySnapshot else {
+          print("No room number found")
+          return
+        }
+        
+        guard let data = document.data() else {
+          print("Document data was empty.")
+          return
+        }
+        
+        if let players = data["players"] as? [[String: Any]] {
+          // update playerlist and in map, add currentcard
+          self.mapPlayersFromFirestore(playerList: players)
+          for player in self.playerList {
+            self.playerList.first(where: {$0.name == player.name})?.cardHolder?.image = UIImage(named: player.currentCard?.cardName() ?? "")
+            
+          }
+        } else {
+          let homeViewController = HomeViewController()
+          self.navigationController?.popToViewController(homeViewController, animated: true)
+          self.playerNameList = []
+        }
+      }
+    }
   }
 }

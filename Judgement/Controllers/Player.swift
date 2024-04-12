@@ -14,6 +14,7 @@ class Player {
     var roundsWon: Int
     var hasToPlay: Bool
     var cardHolder: UIImageView?
+    var currentCard: PlayingCard?
 
     init(name: String, cardsInHand: [PlayingCard], points: Int, roundsJudged: Int, roundsWon: Int, hasToPlay: Bool) {
         self.name = name

@@ -39,6 +39,14 @@ struct PlayingCard {
         self.cardValue = value
         self.cardSuit = suit
     }
+  
+  init?(name: String) {
+    guard let value = CardValue(rawValue: name[0]),
+          let suit = CardSuits(rawValue: name[1])
+    else { return nil }
+    self.cardValue = value
+    self.cardSuit = suit
+  }
     
     func cardName() -> String {
       "\(cardValue.rawValue)\(cardSuit.rawValue)"
